@@ -47,7 +47,12 @@ mongoose.connect("mongodb://localhost:27017/NurseryNation",{
 const userSchema = new mongoose.Schema({
   username : String,
   password : String,
-  googleId : String
+  googleId : String,
+  firstName :String,
+  lastName :String,
+  email : String,
+  contact :String,
+  address :String,
 });
 
 const sellerSchema = new mongoose.Schema({
@@ -71,14 +76,34 @@ userSchema.plugin(findOrCreate);
 sellerSchema.plugin(passportLocalMongoose);
 sellerSchema.plugin(findOrCreate);
 
+// userSchema.methods.verifyPassword(()=>{
+
+// })
+
 const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
 
-// local login strategy
-passport.use(User.createStrategy());
-passport.use(Seller.createStrategy());
 
+
+// local login strategy
+// passport.use(new LocalStrategy(
+//   function(username, password, done) {
+
+//     User.findOne({ username: username }, function (err, user) {
+//       // console.log(user);
+//       // console.log(password);
+//       if (err) { return done(err); }
+//       if (!user) { return done(null, false); }
+//       if (user.password != password) { 
+//         // console.log(user.password);
+//         // console.log(password);
+//         // console.log(user.password === password);
+//         return done(null, false); }
+//       return done(null, user);
+//     });
+//   }
+// ));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -89,6 +114,9 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
+
+passport.use(User.createStrategy());
+passport.use(Seller.createStrategy());
 
 
   passport.use(new GoogleStrategy({
@@ -182,6 +210,7 @@ app.get("/sellerdashboard",(req,res)=>{
 });
 
 app.get("/products",(req,res)=>{
+  console.log("In products ");
      if(req.isAuthenticated()){
         res.render("products");
     }else{
@@ -189,17 +218,25 @@ app.get("/products",(req,res)=>{
     }
 });
 
-app.post("/signup",(req,res)=>{
+app.post("/signup",(req,res,next)=>{
     //passport-local-mongoose 
-    User.register( {username : req.body.username},req.body.password,
+    
+    User.register( {
+      username : req.body.username,
+      firstName : req.body.firstName,
+      lastName : req.body.lastName,
+      email : req.body.emailId,
+      contact : req.body.contact,
+      address : req.body.address
+    },req.body.password,
       (err, result)=>{
           if(err){
               console.log("Error in registering user! "+err);
               res.redirect("/signup");
           }else{
-              passport.authenticate("local")(req, res, ()=>{
-                  res.redirect("/products");
-              })
+            passport.authenticate("local")(req, res, ()=>{
+              res.redirect("/products");
+          })
           }
       });
 });
@@ -209,14 +246,16 @@ app.post("/login",(req,res)=>{
       username : req.body.username,
       password : req.body.password
   });
+  console.log(user);
 
   req.login(user, function(err){
       if(err){
-          console.log("Error in logging the user");
+          console.log("Error in logging the user "+err);
       }else{
-          passport.authenticate("local")(req,res ,()=>{
-              res.redirect("/products");
-          });
+        // console.log("In else");
+        passport.authenticate("local")(req,res ,()=>{
+          res.redirect("/products");
+      });
       }
   });
 });
