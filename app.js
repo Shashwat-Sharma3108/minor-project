@@ -76,34 +76,27 @@ userSchema.plugin(findOrCreate);
 sellerSchema.plugin(passportLocalMongoose);
 sellerSchema.plugin(findOrCreate);
 
-// userSchema.methods.verifyPassword(()=>{
-
-// })
-
 const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
 
+// passport.use(User.createStrategy());
+// passport.use(Seller.createStrategy());
 
-
-// local login strategy
-// passport.use(new LocalStrategy(
-//   function(username, password, done) {
-
-//     User.findOne({ username: username }, function (err, user) {
-//       // console.log(user);
-//       // console.log(password);
-//       if (err) { return done(err); }
-//       if (!user) { return done(null, false); }
-//       if (user.password != password) { 
-//         // console.log(user.password);
-//         // console.log(password);
-//         // console.log(user.password === password);
-//         return done(null, false); }
-//       return done(null, user);
-//     });
-//   }
-// ));
+passport.use(new LocalStrategy(function(username, password, done) {
+  User.findOne({
+      username: username
+  }, function(err, user) {
+      // This is how you handle error
+      if (err) return done(err);
+      // When user is not found
+      if (!user) return done(null, false);
+      // When password is not correct
+      if (!user.authenticate(password)) return done(null, false);
+      // When all things are good, we return the user
+      return done(null, user);
+   });
+}));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -114,10 +107,6 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
-
-passport.use(User.createStrategy());
-passport.use(Seller.createStrategy());
-
 
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLEID,
@@ -220,7 +209,7 @@ app.get("/products",(req,res)=>{
 
 app.post("/signup",(req,res,next)=>{
     //passport-local-mongoose 
-    
+
     User.register( {
       username : req.body.username,
       firstName : req.body.firstName,
@@ -246,7 +235,7 @@ app.post("/login",(req,res)=>{
       username : req.body.username,
       password : req.body.password
   });
-  console.log(user);
+  // console.log(user);
 
   req.login(user, function(err){
       if(err){
