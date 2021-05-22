@@ -47,7 +47,7 @@
                           <i class="far fa-user-circle"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item item" href="/sellersignup">Sign up</a>
+                          <a class="dropdown-item item" href="/logout">Logout</a>
                         </div>
                       </li>
                   </ul>
@@ -57,9 +57,13 @@
         </div>
 
         <div class="loginContainer">
-            <form action="/sellers" method="POST" class="loginForm">
+            
+            <form action="/sellers" method="POST" class="loginForm" enctype="multipart/form-data">
                 <div>
-                    <i class="fas fa-unlock"></i> <input class="loginField" type="file" name="image" placeholder="Add image of your Product">    
+                    <h2 class="heading">Product Details</h2>
+                </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="file" name="image" placeholder="Add image of your Product" style="background-color: ivory;">    
                 </div>
 
                 <div>
@@ -70,7 +74,7 @@
                     <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="productPrice" placeholder="Products Price">    
                 </div>
                 
-                <button type="submit" class="btn btn-md">Login</button>
+                <button type="submit" class="btn btn-md">Submit</button>
             </form>
         </div>
 
@@ -90,10 +94,7 @@
                 </div>
             </div>
         </footer>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js" type="text/javascript" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineMax.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
-
+       
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

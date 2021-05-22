@@ -139,6 +139,9 @@ html{
     text-align: center;
 }
 
+input[type=file]{
+    border-radius: 25px;
+}
 /*************************************Contacts******************************************/
 .contact{
     display: flex;

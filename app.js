@@ -12,11 +12,23 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const LocalStrategy = require("passport-local").Strategy;
 const jwt = require('jsonwebtoken');
+const multer = require("multer");
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static("public"));
+
+const storage = multer.diskStorage({
+  destination : function(req,file,cb){
+    cb(null, 'public/images/')
+  },
+  filename : function(req,file,cb){
+    cb(null, Date.now() + file.originalname)
+  }
+});
+
+const upload = multer({storage : storage});
 
 let refreshTokens = [];
 app.set('view engine', 'ejs');
@@ -64,11 +76,9 @@ const sellerSchema = new mongoose.Schema({
 });
 
 const productSchema = new mongoose.Schema({
-    username : String,
     productName : String,
     price : Number,
     productImage : String,
-    productDetails : String
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -81,38 +91,38 @@ const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
 
-// passport.use(User.createStrategy());
-// passport.use(Seller.createStrategy());
+passport.use(User.createStrategy());
+passport.use(Seller.createStrategy());
 
-passport.use(new LocalStrategy(function(username, password, done) {
-  User.findOne({
-      username: username
-  }, function(err, user) {
-      // This is how you handle error
-      if (err) return done(err);
-      // When user is not found
-      if (!user) return done(null, false);
-      // When password is not correct
-      if (!user.authenticate(password)) return done(null, false);
-      // When all things are good, we return the user
-      return done(null, user);
-   });
-}));
+// passport.use(new LocalStrategy(function(username, password, done) {
+//   User.findOne({
+//       username: username
+//   }, function(err, user) {
+//       // This is how you handle error
+//       if (err) return done(err);
+//       // When user is not found
+//       if (!user) return done(null, false);
+//       // When password is not correct
+//       if (!user.authenticate(password)) return done(null, false);
+//       // When all things are good, we return the user
+//       return done(null, user);
+//    });
+// }));
 
-passport.use(new LocalStrategy(function(username, password, done) {
-  Seller.findOne({
-      username: username
-  }, function(err, user) {
-      // This is how you handle error
-      if (err) return done(err);
-      // When user is not found
-      if (!user) return done(null, false);
-      // When password is not correct
-      if (!user.authenticate(password)) return done(null, false);
-      // When all things are good, we return the user
-      return done(null, user);
-   });
-}));
+// passport.use(new LocalStrategy(function(username, password, done) {
+//   Seller.findOne({
+//       username: username
+//   }, function(err, user) {
+//       // This is how you handle error
+//       if (err) return done(err);
+//       // When user is not found
+//       if (!user) return done(null, false);
+//       // When password is not correct
+//       if (!user.authenticate(password)) return done(null, false);
+//       // When all things are good, we return the user
+//       return done(null, user);
+//    });
+// }));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -215,8 +225,17 @@ app.get("/sellerdashboard",(req,res)=>{
 });
 
 app.get("/products",(req,res)=>{
-     if(req.isAuthenticated()){
-        res.render("products");
+  console.log("in products");
+     if(!req.isAuthenticated()){
+       Products.find((err,result)=>{
+         if(err){
+           console.log("Error in retriving data from products "+err);
+         }else{
+          res.render("products",{
+            products : result
+          });
+         }
+       });
     }else{
          res.redirect("/login");
     }
@@ -313,8 +332,26 @@ app.post("/sellerlogin",(req,res)=>{
   });
 });
 
-app.post("/sellers",(req,res)=>{
+app.post("/sellers",upload.single('image'),(req,res)=>{
+  const fileinfo = req.file.filename;
+  const productName = req.body.productName;
+  const productPrize = req.body.productPrice;
 
+  const product = new Products({
+    productName : productName,
+    price : productPrize,
+    productImage : fileinfo
+  });
+
+  console.log(product);
+
+  product.save((err)=>{
+    if(err){
+      console.log("Error in uploading products data "+err);
+    }else{
+      res.send("Added Successfully!");
+    }
+  })
 });
 
 app.listen("3000" ,(req,res)=>{
