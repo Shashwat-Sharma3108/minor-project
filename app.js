@@ -46,7 +46,6 @@ mongoose.connect("mongodb://localhost:27017/NurseryNation",{
 
 const userSchema = new mongoose.Schema({
   username : String,
-  password : String,
   googleId : String,
   firstName :String,
   lastName :String,
@@ -57,9 +56,11 @@ const userSchema = new mongoose.Schema({
 
 const sellerSchema = new mongoose.Schema({
   username : String,
-  password : String,
-  googleId : String,
-  
+  firstName :String,
+  lastName :String,
+  email : String,
+  contact :String,
+  address :String,
 });
 
 const productSchema = new mongoose.Schema({
@@ -85,6 +86,21 @@ const Products = new mongoose.model("Product",productSchema);
 
 passport.use(new LocalStrategy(function(username, password, done) {
   User.findOne({
+      username: username
+  }, function(err, user) {
+      // This is how you handle error
+      if (err) return done(err);
+      // When user is not found
+      if (!user) return done(null, false);
+      // When password is not correct
+      if (!user.authenticate(password)) return done(null, false);
+      // When all things are good, we return the user
+      return done(null, user);
+   });
+}));
+
+passport.use(new LocalStrategy(function(username, password, done) {
+  Seller.findOne({
       username: username
   }, function(err, user) {
       // This is how you handle error
@@ -248,7 +264,58 @@ app.post("/login",(req,res)=>{
   });
 });
 
+app.post("/sellersignup",(req,res)=>{
+  //passport-local-mongoose 
+  console.log(req.body.username);
+  console.log(req.body.firstName);
+  console.log(req.body.lastName);
+  console.log(req.body.emailId);
+  console.log(req.body.contact);
+  console.log(req.body.address);
+  console.log(req.body.password);
 
+  Seller.register({
+    username : req.body.username,
+    firstName : req.body.firstName,
+    lastName : req.body.lastName,
+    email : req.body.emailId,
+    contact : req.body.contact,
+    address : req.body.address
+  },req.body.password,
+    (err, result)=>{
+        if(err){
+            console.log("Error in registering user! "+err);
+            res.redirect("/sellersignup");
+        }else{
+          passport.authenticate("local")(req, res, ()=>{
+            res.render("seller/seller");
+        })
+        }
+    });
+});
+
+app.post("/sellerlogin",(req,res)=>{
+  const user = new Seller({
+      username : req.body.username,
+      password : req.body.password
+  });
+  // console.log(user);
+
+  req.login(user, function(err){
+      if(err){
+          console.log("Error in logging the user "+err);
+      }else{
+        // console.log("In else");
+        passport.authenticate("local")(req,res ,()=>{
+          res.render("seller/seller");
+      });
+      }
+  });
+});
+
+app.post("/sellers",(req,res)=>{
+
+});
 
 app.listen("3000" ,(req,res)=>{
     console.log("Server Started at port 3000");

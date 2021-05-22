@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursery Nature</title>
+
+     <!--Custom CSS-->
+     <link rel="stylesheet" href="login.css">
+
+    <!--Favicon-->
+    <link rel="shortcut icon" href="images/b039393234714368b5f6f52f4d742c63.png" type="image/x-icon">
+    <!--Bootstrap CDN-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!--Font Awesome-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap" rel="stylesheet">
+
+    <script src="https://kit.fontawesome.com/6450af1cb3.js" crossorigin="anonymous"></script>
+
+    <!--Google Fonts-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+</head>
+<body>
+        <!--Navbar Section-->
+        <div class="navigation">
+            <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+                <a class="navbar-brand" href="/">Nursery Nation</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav ml-auto">
+                    <li class="nav-item  text-capitalize font-weight-bold">
+                      <a class="nav-link" href="/#header">Home</a>
+                    </li>
+            
+                    <li class="nav-item text-capitalize font-weight-bold">
+                        <a class="nav-link" href="#contacts">Contact</a>
+                    </li>
+                    
+                    <li class="nav-item text-capitalize font-weight-bold dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="far fa-user-circle"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                          <a class="dropdown-item item" href="/sellersignup">Sign up</a>
+                        </div>
+                      </li>
+                  </ul>
+                  
+                </div>
+              </nav> 
+        </div>
+
+        <div class="loginContainer">
+            <form action="/sellers" method="POST" class="loginForm">
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="file" name="image" placeholder="Add image of your Product">    
+                </div>
+
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="productName" placeholder="Product Name">    
+                </div>
+
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="productPrice" placeholder="Products Price">    
+                </div>
+                
+                <button type="submit" class="btn btn-md">Login</button>
+            </form>
+        </div>
+
+        <footer>
+            <div class="contact" id="contacts">
+                <div>
+                    <i class="fab fa-facebook "></i>
+                </div>
+                <div>
+                    <i class="fab fa-instagram "></i>
+                </div>
+                <div>
+                    <i class="fab fa-whatsapp "></i>
+                </div>
+                <div>
+                    <i class="fab fa-github "></i>
+                </div>
+            </div>
+        </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js" type="text/javascript" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineMax.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="login.js"></script> 
+</body>
+</html>
