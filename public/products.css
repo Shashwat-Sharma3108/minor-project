@@ -1,0 +1,69 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root{
+    --bgcolor:#c2f970;
+}
+body{
+    font-family: 'Ubuntu', sans-serif;
+
+}
+html{
+  scroll-behavior: smooth;
+}
+
+.navigation{
+    background: inherit;
+    font-size: 1rem;
+}
+
+.navbar-brand{
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    color: ivory;
+}
+
+/*Products*/
+.products{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 2rem;
+}
+
+.card{
+    margin-bottom: 1rem;
+}
+.card:not(:last-child){
+    margin-right: 1rem;
+}
+
+
+
+
+
+/*Contacts*/
+.contact{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    padding:1rem;
+    color: ivory;
+    background: rgb(22, 21, 21);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+.fab{
+    margin-right: 20px;
+    font-size: 20px;
+}
+.fab:last-child(){
+    margin-right: 0;
+}

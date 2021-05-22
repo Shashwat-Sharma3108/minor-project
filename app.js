@@ -199,7 +199,6 @@ app.get("/sellerdashboard",(req,res)=>{
 });
 
 app.get("/products",(req,res)=>{
-  console.log("In products ");
      if(req.isAuthenticated()){
         res.render("products");
     }else{

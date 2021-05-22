@@ -58,7 +58,7 @@
 
         <div class="loginContainer" style="background-image: url(images/loginbg.jpg);">
             <form action="/signup" method="POST" class="loginForm">
-                <!-- <div>
+                <div>
                     <h2>Sign Up</h2>
                 </div>
                 <div>
@@ -70,20 +70,29 @@
                     >
                 </div>
                 <div>
-                    <a href="/login"> Have an account?</a>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="firstName" placeholder="First Name"
+                    >
                 </div>
-                <button type="submit" class="btn btn-md ">Sign Up</button> -->
-          
-            <div class="external">
-                <a class="btn btn-block btn-social btn-google" href="/auth/google" role="button">
-                    <i class="fab fa-google external-links"></i>
-                    Sign Up with Google
-                  </a>
-                  <a class="btn btn-block btn-social btn-facebook" href="/auth/facebook" role="button">
-                    <i class="fab fa-facebook external-links"></i>
-                    Sign Up with Facebook
-                  </a>
-            </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="lastName" placeholder="Last Name"
+                    >
+                </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="emailId" placeholder="Email Id"
+                    >
+                </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="number" name="contact" placeholder="Mobile Number" minlength="10" maxlength="10"
+                    >
+                </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="address" placeholder="Address"
+                    >
+                </div>
+                <div>
+                    <a href="/sellerlogin"> Have an account?</a>
+                </div>
+                <button type="submit" class="btn btn-md">Sign Up</button>
         </form>
         </div>
 
