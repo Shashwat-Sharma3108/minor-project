@@ -125,7 +125,6 @@ const auth2 = async function(req,res,next){
   }
   try {
     const verified = jwt.verify(globalToken, process.env.SECRET);
-    console.log(verified);
     req.user = verified;
     next();
   } catch (error) {

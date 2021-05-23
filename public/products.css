@@ -28,11 +28,16 @@ html{
 }
 
 /*Products*/
+.productsContainer{
+    padding: 2rem;
+}
 .products{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 2rem;
+}
+img{
+    height: 20rem;
 }
 
 .card{
@@ -53,7 +58,7 @@ html{
     padding:1rem;
     color: ivory;
     background: rgb(22, 21, 21);
-    position: fixed;
+    position: relative;
     bottom: 0;
     width: 100%;
 }
