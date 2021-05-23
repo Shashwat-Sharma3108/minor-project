@@ -56,7 +56,7 @@
     </div>
 
     <div class="products">
-      <div class="card" style="width: 18rem; height: max-content;">
+      <div class="card" style="width: 18rem;">
         <img class="card-img-top" src="Plants/1.jpg" alt="Card image cap">
         <div class="card-body">
           <h5 class="card-title">Product's Name</h5>
@@ -83,25 +83,25 @@
           <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
         </div>
       </div>
-      
-    </div>
-    <% products.forEach(product=>{ %>
-    <div class="products">
-      <div class="card" style="width: 18rem; height: max-content;">
-        <img class="card-img-top" src="images/<%=product.productImage%>" alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title"><%= product.productName %></h5>
+      <% products.forEach(product=>{ %>
+        <div class="products">
+          <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="images/<%=product.productImage%>" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.productName %></h5>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"> Rupees <%= product.price %>/-  </li>
+            </ul>
+            <div class="card-body">
+              <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
+              <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
+            </div>
+          </div>
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item"> <%= product.price %>  </li>
-        </ul>
-        <div class="card-body">
-          <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
-          <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
-        </div>
-      </div>
+        <%})%>
     </div>
-    <%})%>
+   
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

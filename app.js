@@ -13,6 +13,8 @@ const findOrCreate = require('mongoose-findorcreate');
 const LocalStrategy = require("passport-local").Strategy;
 const jwt = require('jsonwebtoken');
 const multer = require("multer");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use(session({
   resave: true
 }));
 
+var globalToken;
+
 //using passport and passport to deal with sessions
  app.use(passport.initialize());
  app.use(passport.session());
@@ -57,17 +61,19 @@ mongoose.connect("mongodb://localhost:27017/NurseryNation",{
 
 
 const userSchema = new mongoose.Schema({
-  username : String,
+  username : {type : String, required : true, unique:true},
   googleId : String,
   firstName :String,
   lastName :String,
   email : String,
   contact :String,
   address :String,
+  password : String
 });
 
 const sellerSchema = new mongoose.Schema({
-  username : String,
+  username : {type : String, required : true, unique:true},
+  password : String,
   firstName :String,
   lastName :String,
   email : String,
@@ -91,105 +97,46 @@ const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
 
-passport.use(User.createStrategy());
-passport.use(Seller.createStrategy());
 
-// passport.use(new LocalStrategy(function(username, password, done) {
-//   User.findOne({
-//       username: username
-//   }, function(err, user) {
-//       // This is how you handle error
-//       if (err) return done(err);
-//       // When user is not found
-//       if (!user) return done(null, false);
-//       // When password is not correct
-//       if (!user.authenticate(password)) return done(null, false);
-//       // When all things are good, we return the user
-//       return done(null, user);
-//    });
-// }));
-
-// passport.use(new LocalStrategy(function(username, password, done) {
-//   Seller.findOne({
-//       username: username
-//   }, function(err, user) {
-//       // This is how you handle error
-//       if (err) return done(err);
-//       // When user is not found
-//       if (!user) return done(null, false);
-//       // When password is not correct
-//       if (!user.authenticate(password)) return done(null, false);
-//       // When all things are good, we return the user
-//       return done(null, user);
-//    });
-// }));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-  passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLEID,
-    clientSecret: process.env.GOOGLESECRET,
-    callbackURL: "http://localhost:3000/auth/google/products",
-    userProfileURL : "https://www.googleapis.com/oauth2/v3/userinfo"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-      console.log(profile);
-    User.findOrCreate({ username: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
+const auth = async function(req,res,next){
+  
+  if(!globalToken){
+    console.log("Token not present please login!");
+    res.redirect("/login");
+    return;
   }
-));
-
-passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOKID,
-    clientSecret: process.env.FACEBOOKSECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/products",
-    profileFields : ['id', 'displayName']
-    
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ username: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
+  try {
+    const verified = jwt.verify(globalToken, process.env.SECRET);
+    console.log(verified);
+    req.user = verified;
+    next();
+  } catch (error) {
+    console.log("Invalid token "+error);
+    res.redirect("/login");
   }
-));
+}
 
+const auth2 = async function(req,res,next){
+  
+  if(!globalToken){
+    console.log("Token not present please login!");
+    res.redirect("/sellerlogin");
+    return;
+  }
+  try {
+    const verified = jwt.verify(globalToken, process.env.SECRET);
+    console.log(verified);
+    req.user = verified;
+    next();
+  } catch (error) {
+    console.log("Invalid token "+error);
+    res.redirect("/sellerlogin");
+  }
+}
 app.get("/logout",(req,res)=>{
-    req.logout();
+    globalToken = "";
     res.redirect("/");
 });
-
-app.get("/auth/google",
-  passport.authenticate('google', { scope: ["profile"] })
-);
-
-app.get("/auth/google/products", 
-  passport.authenticate('google', { failureRedirect: "/login" }),
-  function(req, res) {
-    // Successful authentication, redirect secrets.
-    
-    res.redirect('/products');
-  });
-
-  app.get('/auth/facebook',
-  passport.authenticate('facebook')
-  );
-
-app.get('/auth/facebook/products',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect secrets.
-    
-    res.redirect('/products');
-  });
 
 app.get("/",(req,res)=>{
     res.render("index");
@@ -224,9 +171,7 @@ app.get("/sellerdashboard",(req,res)=>{
   res.render("seller/sellerdashboard");
 });
 
-app.get("/products",(req,res)=>{
-  console.log("in products");
-     if(!req.isAuthenticated()){
+app.get("/products",auth,async (req,res)=>{
        Products.find((err,result)=>{
          if(err){
            console.log("Error in retriving data from products "+err);
@@ -236,99 +181,151 @@ app.get("/products",(req,res)=>{
           });
          }
        });
-    }else{
-         res.redirect("/login");
-    }
 });
 
 app.post("/signup",(req,res,next)=>{
-    //passport-local-mongoose 
-
-    User.register( {
-      username : req.body.username,
-      firstName : req.body.firstName,
-      lastName : req.body.lastName,
-      email : req.body.emailId,
-      contact : req.body.contact,
-      address : req.body.address
-    },req.body.password,
-      (err, result)=>{
-          if(err){
-              console.log("Error in registering user! "+err);
-              res.redirect("/signup");
-          }else{
-            passport.authenticate("local")(req, res, ()=>{
-              res.redirect("/products");
-          })
-          }
-      });
-});
-
-app.post("/login",(req,res)=>{
-  const user = new User({
-      username : req.body.username,
-      password : req.body.password
-  });
-  // console.log(user);
-
-  req.login(user, function(err){
+  
+    User.findOne({username : req.body.username},(err,result)=>{
       if(err){
-          console.log("Error in logging the user "+err);
+        console.log("Error in finding user "+err);
       }else{
-        // console.log("In else");
-        passport.authenticate("local")(req,res ,()=>{
-          res.redirect("/products");
-      });
-      }
-  });
-});
-
-app.post("/sellersignup",(req,res)=>{
-  //passport-local-mongoose 
-  console.log(req.body.username);
-  console.log(req.body.firstName);
-  console.log(req.body.lastName);
-  console.log(req.body.emailId);
-  console.log(req.body.contact);
-  console.log(req.body.address);
-  console.log(req.body.password);
-
-  Seller.register({
-    username : req.body.username,
-    firstName : req.body.firstName,
-    lastName : req.body.lastName,
-    email : req.body.emailId,
-    contact : req.body.contact,
-    address : req.body.address
-  },req.body.password,
-    (err, result)=>{
-        if(err){
-            console.log("Error in registering user! "+err);
-            res.redirect("/sellersignup");
+        if(result){
+          console.log("Username already exists ");
+          res.redirect("/signup");
         }else{
-          passport.authenticate("local")(req, res, ()=>{
-            res.render("seller/seller");
-        })
+          console.log("Registering new user!");
+          bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+            const user = new User({
+              username : req.body.username,
+                firstName : req.body.firstName,
+                lastName : req.body.lastName,
+                email : req.body.emailId,
+                contact : req.body.contact,
+                address : req.body.address,
+                password: hash,
+            });
+            
+            user.save((err)=>{
+              if(err){
+                console.log("Error in registering user "+err);
+              }else{
+                res.redirect("/login");
+              }
+            })
+        });
         }
+      }
     });
 });
 
-app.post("/sellerlogin",(req,res)=>{
-  const user = new Seller({
-      username : req.body.username,
-      password : req.body.password
-  });
-  // console.log(user);
+app.post("/login",(req,res)=>{
+  
+  const username = req.body.username;
+  const password = req.body.password;
 
-  req.login(user, function(err){
-      if(err){
-          console.log("Error in logging the user "+err);
+   User.findOne({username : username},(err, foundUser)=>{
+    if(err){
+      console.log("Error in logging user "+err);
+    }else{
+      if(!foundUser){
+        console.log("Username not found");
+        res.redirect("/login");
+      }
+      else if(foundUser){
+        bcrypt.compare(password, foundUser.password, (err,result)=>{
+          if(err){
+            console.log("Error in checking password "+err);
+          }else{
+            if(result === false){
+              console.log("Incorrect Password!");
+              res.redirect("/login");
+            }
+            if(result === true){
+              //create and assign token
+              const token = jwt.sign({username : foundUser.username},process.env.SECRET);
+              globalToken = token;
+              res.redirect("/products");
+            }
+          }
+        });
+      }
+    }
+  });
+});
+
+
+app.get("/sellers",auth2,(req,res)=>{
+  res.render("seller/seller");
+});
+
+
+app.post("/sellersignup",(req,res)=>{
+  //passport-local-mongoose 
+  Seller.findOne({username : req.body.username},(err,result)=>{
+    if(err){
+      console.log("Error in finding user "+err);
+    }else{
+      if(result){
+        console.log("Username already exists ");
+        res.redirect("/sellersignup");
       }else{
-        // console.log("In else");
-        passport.authenticate("local")(req,res ,()=>{
-          res.render("seller/seller");
+        console.log("Registering new user!");
+        bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+          const seller = new Seller({
+              username : req.body.username,
+              firstName : req.body.firstName,
+              lastName : req.body.lastName,
+              email : req.body.emailId,
+              contact : req.body.contact,
+              address : req.body.address,
+              password: hash,
+          });
+          
+          seller.save((err)=>{
+            if(err){
+              console.log("Error in registering user "+err);
+            }else{
+              res.redirect("/sellerlogin");
+            }
+          })
       });
       }
+    }
+  });
+});
+
+app.post("/sellerlogin",(req,res)=>{
+  
+  const username = req.body.username;
+  const password = req.body.password;
+
+   Seller.findOne({username : username},(err, foundUser)=>{
+    if(err){
+      console.log("Error in logging user "+err);
+    }else{
+      if(!foundUser){
+        console.log("Username not found");
+        res.redirect("/sellerlogin");
+      }
+      else if(foundUser){
+        bcrypt.compare(password, foundUser.password, (err,result)=>{
+          if(err){
+            console.log("Error in checking password "+err);
+          }else{
+            if(result === false){
+              console.log("Incorrect Password!");
+              res.redirect("/sellerlogin");
+            }
+            if(result === true){
+              //create and assign token
+              const token = jwt.sign({username : foundUser.username},process.env.SECRET);
+              globalToken = token;
+              res.redirect("/sellers");
+            }
+          }
+        });
+      }
+    }
   });
 });
 
@@ -349,7 +346,7 @@ app.post("/sellers",upload.single('image'),(req,res)=>{
     if(err){
       console.log("Error in uploading products data "+err);
     }else{
-      res.send("Added Successfully!");
+      res.redirect("/products");
     }
   })
 });
