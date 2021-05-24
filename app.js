@@ -5,12 +5,6 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const _ = require("lodash");
 const session = require('express-session');
-const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const FacebookStrategy = require('passport-facebook').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
-const LocalStrategy = require("passport-local").Strategy;
 const jwt = require('jsonwebtoken');
 const multer = require("multer");
 const bcrypt = require("bcrypt");
@@ -51,9 +45,6 @@ app.use(session({
 
 var globalToken;
 
-//using passport and passport to deal with sessions
- app.use(passport.initialize());
- app.use(passport.session());
 
 mongoose.connect("mongodb://localhost:27017/NurseryNation",{
     useNewUrlParser : true,
@@ -64,23 +55,22 @@ mongoose.connect("mongodb://localhost:27017/NurseryNation",{
 
 const userSchema = new mongoose.Schema({
   username : {type : String, required : true, unique:true},
-  googleId : String,
-  firstName :String,
-  lastName :String,
-  email : String,
-  contact :String,
-  address :String,
-  password : String
+  firstName :{type : String, required : true},
+  lastName :{type : String, required : true},
+  email : {type : String, required : true, unique:true},
+  contact :{type : String, required : true},
+  address :{type : String, required : true},
+  password : {type : String, required : true}
 });
 
 const sellerSchema = new mongoose.Schema({
   username : {type : String, required : true, unique:true},
-  password : String,
-  firstName :String,
-  lastName :String,
-  email : String,
-  contact :String,
-  address :String,
+  password : {type : String, required : true},
+  firstName :{type : String, required : true},
+  lastName :{type : String, required : true},
+  email : {type : String, required : true, unique:true},
+  contact :{type : String, required : true},
+  address :{type : String, required : true},
 });
 
 const productSchema = new mongoose.Schema({
@@ -88,12 +78,6 @@ const productSchema = new mongoose.Schema({
     price : Number,
     productImage : String,
 });
-
-userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findOrCreate);
-
-sellerSchema.plugin(passportLocalMongoose);
-sellerSchema.plugin(findOrCreate);
 
 const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
@@ -184,36 +168,59 @@ app.get("/products",auth,async (req,res)=>{
        });
 });
 
-app.post("/signup",(req,res,next)=>{
-  
-    User.findOne({username : req.body.username},(err,result)=>{
+app.post("/signup",(req,res)=>{
+    
+  if(req.body.username === "" || req.body.password==="" ||
+    req.body.firstName === "" || req.body.lastName === "" ||
+    req.body.emailId === "" || req.body.contact === "" ||
+    req.body.address === ""
+  ){
+    console.log("All field are necessary");
+    res.redirect("/signup");
+    return;
+  }
+
+  User.findOne({email: req.body.emailId},(err,result)=>{
       if(err){
-        console.log("Error in finding user "+err);
+        console.log("error in finding email : "+err);
       }else{
         if(result){
-          console.log("Username already exists ");
+          console.log("Email Already in use");
           res.redirect("/signup");
-        }else{
-          console.log("Registering new user!");
-          bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-            const user = new User({
-              username : req.body.username,
-                firstName : req.body.firstName,
-                lastName : req.body.lastName,
-                email : req.body.emailId,
-                contact : req.body.contact,
-                address : req.body.address,
-                password: hash,
-            });
-            
-            user.save((err)=>{
-              if(err){
-                console.log("Error in registering user "+err);
+          return;
+        }
+        else{
+          User.findOne({username : req.body.username},(err,result)=>{
+            if(err){
+              console.log("Error in finding user "+err);
+            }else{
+              if(result){
+                console.log("Username already exists ");
+                res.redirect("/signup");
               }else{
-                res.redirect("/login");
+                console.log("Registering new user!");
+                bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+                  const user = new User({
+                    username : req.body.username,
+                      firstName : req.body.firstName,
+                      lastName : req.body.lastName,
+                      email : req.body.emailId,
+                      contact : req.body.contact,
+                      address : req.body.address,
+                      password: hash,
+                  });
+                  
+                  user.save((err)=>{
+                    if(err){
+                      console.log("Error in registering user "+err);
+                    }else{
+                      res.redirect("/login");
+                    }
+                  })
+              });
               }
-            })
-        });
+            }
+          });
         }
       }
     });
@@ -262,37 +269,61 @@ app.get("/sellers",auth2,(req,res)=>{
 
 app.post("/sellersignup",(req,res)=>{
   //passport-local-mongoose 
-  Seller.findOne({username : req.body.username},(err,result)=>{
-    if(err){
-      console.log("Error in finding user "+err);
-    }else{
-      if(result){
-        console.log("Username already exists ");
-        res.redirect("/sellersignup");
+
+  if(req.body.username === "" || req.body.password==="" ||
+    req.body.firstName === "" || req.body.lastName === "" ||
+    req.body.emailId === "" || req.body.contact === "" ||
+    req.body.address === ""
+  ){
+    console.log("All field are necessary");
+    res.redirect("/sellersignup");
+    return;
+  }
+
+  Seller.findOne({email: req.body.emailId},(err,result)=>{
+      if(err){
+        console.log("error in finding email : "+err);
       }else{
-        console.log("Registering new user!");
-        bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-          const seller = new Seller({
-              username : req.body.username,
-              firstName : req.body.firstName,
-              lastName : req.body.lastName,
-              email : req.body.emailId,
-              contact : req.body.contact,
-              address : req.body.address,
-              password: hash,
-          });
-          
-          seller.save((err)=>{
+        if(result){
+          console.log("Email Already in use");
+          res.redirect("/sellersignup");
+          return;
+        }
+        else{
+          Seller.findOne({username : req.body.username},(err,result)=>{
             if(err){
-              console.log("Error in registering user "+err);
+              console.log("Error in finding user "+err);
             }else{
-              res.redirect("/sellerlogin");
+              if(result){
+                console.log("Username already exists ");
+                res.redirect("/sellersignup");
+              }else{
+                console.log("Registering new user!");
+                bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+                  const seller = new Seller({
+                    username : req.body.username,
+                      firstName : req.body.firstName,
+                      lastName : req.body.lastName,
+                      email : req.body.emailId,
+                      contact : req.body.contact,
+                      address : req.body.address,
+                      password: hash,
+                  });
+                  
+                  seller.save((err)=>{
+                    if(err){
+                      console.log("Error in registering user "+err);
+                    }else{
+                      res.redirect("/sellerlogin");
+                    }
+                  })
+              });
+              }
             }
-          })
-      });
+          });
+        }
       }
-    }
-  });
+    });
 });
 
 app.post("/sellerlogin",(req,res)=>{

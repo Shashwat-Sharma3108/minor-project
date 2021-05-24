@@ -63,7 +63,7 @@
                 </div>
                 <div>
                     <i class="far fa-user"></i><input class="loginField" type="text" name="username" placeholder="User Name"
-                    >
+                    value="<%= typeof username !='undefined'? username:''%>">
                 </div>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="password" name="password" placeholder="Password"
@@ -71,23 +71,23 @@
                 </div>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="firstName" placeholder="First Name"
-                    >
+                    value="<%= typeof firstName !='undefined'? firstName:''%>">
                 </div>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="lastName" placeholder="Last Name"
-                    >
+                    value="<%= typeof lastName !='undefined'? lastName:''%>">
                 </div>
                 <div>
-                    <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="emailId" placeholder="Email Id"
-                    >
+                    <i class="fas fa-unlock"></i> <input class="loginField" type="email" name="emailId" placeholder="Email Id"
+                    value="<%= typeof emailId !='undefined'? emailId:''%>">
                 </div>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="number" name="contact" placeholder="Mobile Number" minlength="10" maxlength="10"
-                    >
+                    value="<%= typeof contact !='undefined'? contact:''%>">
                 </div>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="address" placeholder="Address"
-                    >
+                    value="<%= typeof address !='undefined'? address:''%>">
                 </div>
                 <div>
                     <a href="/login"> Have an account?</a>
