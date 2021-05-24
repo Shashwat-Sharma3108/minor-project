@@ -15,6 +15,7 @@ const jwt = require('jsonwebtoken');
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -32,7 +33,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage : storage});
 
-let refreshTokens = [];
+app.use(cookieParser());
+
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({
@@ -99,14 +101,14 @@ const Products = new mongoose.model("Product",productSchema);
 
 
 const auth = async function(req,res,next){
-  
-  if(!globalToken){
+  const token = req.cookies.authToken;
+  if(!token){
     console.log("Token not present please login!");
     res.redirect("/login");
     return;
   }
   try {
-    const verified = jwt.verify(globalToken, process.env.SECRET);
+    const verified = jwt.verify(token, process.env.SECRET);
     console.log(verified);
     req.user = verified;
     next();
@@ -117,14 +119,14 @@ const auth = async function(req,res,next){
 }
 
 const auth2 = async function(req,res,next){
-  
-  if(!globalToken){
+  const token = req.cookies.authToken;
+  if(!token){
     console.log("Token not present please login!");
     res.redirect("/sellerlogin");
     return;
   }
   try {
-    const verified = jwt.verify(globalToken, process.env.SECRET);
+    const verified = jwt.verify(token, process.env.SECRET);
     req.user = verified;
     next();
   } catch (error) {
@@ -133,7 +135,7 @@ const auth2 = async function(req,res,next){
   }
 }
 app.get("/logout",(req,res)=>{
-    globalToken = "";
+    res.clearCookie("authToken");
     res.redirect("/");
 });
 
@@ -242,7 +244,7 @@ app.post("/login",(req,res)=>{
             if(result === true){
               //create and assign token
               const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              globalToken = token;
+              res.cookie("authToken",token);
               res.redirect("/products");
             }
           }
@@ -318,7 +320,7 @@ app.post("/sellerlogin",(req,res)=>{
             if(result === true){
               //create and assign token
               const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              globalToken = token;
+              res.cookie("authToken",token);
               res.redirect("/sellers");
             }
           }
@@ -328,7 +330,7 @@ app.post("/sellerlogin",(req,res)=>{
   });
 });
 
-app.post("/sellers",upload.single('image'),(req,res)=>{
+app.post("/sellers", upload.single('image'),(req,res)=>{
   const fileinfo = req.file.filename;
   const productName = req.body.productName;
   const productPrize = req.body.productPrice;
