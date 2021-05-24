@@ -244,7 +244,7 @@ app.post("/login",(req,res)=>{
             if(result === true){
               //create and assign token
               const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              res.cookie("authToken",token);
+              res.cookie("authToken",token,{maxAge: 900000});
               res.redirect("/products");
             }
           }
@@ -320,7 +320,7 @@ app.post("/sellerlogin",(req,res)=>{
             if(result === true){
               //create and assign token
               const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              res.cookie("authToken",token);
+              res.cookie("authToken",token,{maxAge: 900000});
               res.redirect("/sellers");
             }
           }

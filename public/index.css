@@ -274,6 +274,10 @@ h2.heading{
     margin: 5%;
     margin-bottom: 100%;
   }
+  .p-container>::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
   .p-container{
     flex-direction:column;
     max-width:100%;
