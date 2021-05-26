@@ -118,6 +118,8 @@ const auth2 = async function(req,res,next){
     res.redirect("/sellerlogin");
   }
 }
+
+let errors = [];
 app.get("/logout",(req,res)=>{
     res.clearCookie("authToken");
     res.redirect("/");
@@ -128,11 +130,17 @@ app.get("/",(req,res)=>{
 });
 
 app.get("/login",(req,res)=>{
-    res.render("login");
+    res.render("login",{
+      error: errors
+    });
+    errors= [];
 });
 
 app.get("/signup",(req,res)=>{
-    res.render("signup");
+    res.render("signup",{
+      error : errors
+    });
+    errors = [];
 });
 
 
@@ -141,12 +149,18 @@ app.get("/userDetails",(req,res)=>{
 });
 
 app.get("/sellersignup",(req,res)=>{
-  res.render("seller/sellersignup");
+  res.render("seller/sellersignup",{
+    error : errors
+  });
+  errors = [];
 });
 
 app.get("/sellerlogin",(req,res)=>{
-  res.render("seller/sellerlogin");
-})
+  res.render("seller/sellerlogin",{
+    error : errors
+  });
+  errors = [];
+});
 
 app.get("/sellerdetails",(req,res)=>{
 
@@ -175,6 +189,7 @@ app.post("/signup",(req,res)=>{
     req.body.emailId === "" || req.body.contact === "" ||
     req.body.address === ""
   ){
+    errors.push({msg : "Erros! Please fill all fields!"});
     console.log("All field are necessary");
     res.redirect("/signup");
     return;
@@ -185,6 +200,7 @@ app.post("/signup",(req,res)=>{
         console.log("error in finding email : "+err);
       }else{
         if(result){
+          errors.push({msg: "Error! Email Already in use"})
           console.log("Email Already in use");
           res.redirect("/signup");
           return;
@@ -195,9 +211,15 @@ app.post("/signup",(req,res)=>{
               console.log("Error in finding user "+err);
             }else{
               if(result){
+                errors.push({msg : "Error! Username already in use!"})
                 console.log("Username already exists ");
                 res.redirect("/signup");
               }else{
+                if(req.body.password.length < 6){
+                  errors.push({msg : "Error! Password must be of atleast 6 characters!"});
+                  console.log("Password too small");
+                  res.redirect("/signup");
+                }else{
                 console.log("Registering new user!");
                 bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
                   const user = new User({
@@ -214,11 +236,14 @@ app.post("/signup",(req,res)=>{
                     if(err){
                       console.log("Error in registering user "+err);
                     }else{
+                      errors.push({msg : "Registered Successfully! Please login"});
+                      console.log("Success! Registered successfully!");
                       res.redirect("/login");
                     }
                   })
               });
               }
+              }//for else
             }
           });
         }
@@ -231,34 +256,43 @@ app.post("/login",(req,res)=>{
   const username = req.body.username;
   const password = req.body.password;
 
-   User.findOne({username : username},(err, foundUser)=>{
-    if(err){
-      console.log("Error in logging user "+err);
-    }else{
-      if(!foundUser){
-        console.log("Username not found");
-        res.redirect("/login");
-      }
-      else if(foundUser){
-        bcrypt.compare(password, foundUser.password, (err,result)=>{
-          if(err){
-            console.log("Error in checking password "+err);
-          }else{
-            if(result === false){
-              console.log("Incorrect Password!");
-              res.redirect("/login");
+  if(!username || !password){
+    errors.push({msg : "Error! Please fill all fields!"});
+    console.log("Empty fields!");
+    res.redirect("/login");
+    return;
+  }else{
+    User.findOne({username : username},(err, foundUser)=>{
+      if(err){
+        console.log("Error in logging user "+err);
+      }else{
+        if(!foundUser){
+          errors.push({msg : "Error! Username not found!"})
+          console.log("Username not found");
+          res.redirect("/login");
+        }
+        else if(foundUser){
+          bcrypt.compare(password, foundUser.password, (err,result)=>{
+            if(err){
+              console.log("Error in checking password "+err);
+            }else{
+              if(result === false){
+                errors.push({msg : "Error! Incorrect Password"})
+                console.log("Incorrect Password!");
+                res.redirect("/login");
+              }
+              if(result === true){
+                //create and assign token
+                const token = jwt.sign({username : foundUser.username},process.env.SECRET);
+                res.cookie("authToken",token,{maxAge: 900000});
+                res.redirect("/products");
+              }
             }
-            if(result === true){
-              //create and assign token
-              const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              res.cookie("authToken",token,{maxAge: 900000});
-              res.redirect("/products");
-            }
-          }
-        });
+          });
+        }
       }
-    }
-  });
+    });
+  }
 });
 
 
@@ -275,6 +309,7 @@ app.post("/sellersignup",(req,res)=>{
     req.body.emailId === "" || req.body.contact === "" ||
     req.body.address === ""
   ){
+    errors.push({msg:"Error! All fields are necessary"})
     console.log("All field are necessary");
     res.redirect("/sellersignup");
     return;
@@ -285,6 +320,7 @@ app.post("/sellersignup",(req,res)=>{
         console.log("error in finding email : "+err);
       }else{
         if(result){
+          errors.push({msg: "Email Already in use"})
           console.log("Email Already in use");
           res.redirect("/sellersignup");
           return;
@@ -295,6 +331,7 @@ app.post("/sellersignup",(req,res)=>{
               console.log("Error in finding user "+err);
             }else{
               if(result){
+                errors.push({msg : "Error! Username already exists "})
                 console.log("Username already exists ");
                 res.redirect("/sellersignup");
               }else{
@@ -314,6 +351,7 @@ app.post("/sellersignup",(req,res)=>{
                     if(err){
                       console.log("Error in registering user "+err);
                     }else{
+                      errors.push({msg:"Registered Successfully! Please Login"})
                       res.redirect("/sellerlogin");
                     }
                   })
@@ -331,41 +369,60 @@ app.post("/sellerlogin",(req,res)=>{
   const username = req.body.username;
   const password = req.body.password;
 
-   Seller.findOne({username : username},(err, foundUser)=>{
-    if(err){
-      console.log("Error in logging user "+err);
-    }else{
-      if(!foundUser){
-        console.log("Username not found");
-        res.redirect("/sellerlogin");
-      }
-      else if(foundUser){
-        bcrypt.compare(password, foundUser.password, (err,result)=>{
-          if(err){
-            console.log("Error in checking password "+err);
-          }else{
-            if(result === false){
-              console.log("Incorrect Password!");
-              res.redirect("/sellerlogin");
+  if(!username || !password){
+    errors.push({msg : "Error! All fields are necessary"});
+    console.log("Empty Fields");
+    res.redirect("/sellerlogin");
+    return;
+  }else{
+    Seller.findOne({username : username},(err, foundUser)=>{
+      if(err){
+        console.log("Error in logging user "+err);
+      }else{
+        if(!foundUser){
+          errors.push({msg: "Error! Username not found"})
+          console.log("Username not found");
+          res.redirect("/sellerlogin");
+        }
+        else if(foundUser){
+          bcrypt.compare(password, foundUser.password, (err,result)=>{
+            if(err){
+              console.log("Error in checking password "+err);
+            }else{
+              if(result === false){
+                errors.push({msg : "Error! Incorrect Password"});
+                console.log("Incorrect Password!");
+                res.redirect("/sellerlogin");
+              }
+              if(result === true){
+                //create and assign token
+                const token = jwt.sign({username : foundUser.username},process.env.SECRET);
+                res.cookie("authToken",token,{maxAge: 900000});
+                res.redirect("/sellers");
+              }
             }
-            if(result === true){
-              //create and assign token
-              const token = jwt.sign({username : foundUser.username},process.env.SECRET);
-              res.cookie("authToken",token,{maxAge: 900000});
-              res.redirect("/sellers");
-            }
-          }
-        });
+          });
+        }
       }
-    }
-  });
+    });
+  }
+   
 });
 
 app.post("/sellers", upload.single('image'),(req,res)=>{
+
+  if(req.file === "" || req.body.productName === "" || 
+  req.body.productPrice === ""){
+    console.log("All fields are necessary!");
+    res.redirect("/sellers");
+    return;
+  }
+
   const fileinfo = req.file.filename;
   const productName = req.body.productName;
   const productPrize = req.body.productPrice;
 
+  
   const product = new Products({
     productName : productName,
     price : productPrize,
