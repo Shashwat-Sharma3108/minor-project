@@ -57,63 +57,7 @@
 
     <div class="productsContainer">
       <div class="products">
-        <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="Plants/1.jpg" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">Product's Name</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Price of Product</li>
-          </ul>
-          <div class="card-body">
-            <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
-            <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
-          </div>
-        </div>
-  
-        <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="Plants/1.jpg" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">Product's Name</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Price of Product</li>
-          </ul>
-          <div class="card-body">
-            <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
-            <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
-          </div>
-        </div>
-
         
-        <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="Plants/1.jpg" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">Product's Name</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Price of Product</li>
-          </ul>
-          <div class="card-body">
-            <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
-            <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
-          </div>
-        </div>
-
-        
-        <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="Plants/1.jpg" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">Product's Name</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Price of Product</li>
-          </ul>
-          <div class="card-body">
-            <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>
-            <a href="#" class="card-link"> <button class="btn btn-outline-success">Buy Now</button></a>
-          </div>
-        </div>
         <% products.forEach(product=>{ %>
           
             <div class="card" style="width: 18rem;">
@@ -123,6 +67,12 @@
               </div>
               <ul class="list-group list-group-flush">
                 <li class="list-group-item"> Rupees <%= product.price %>/-  </li>
+              </ul>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"> <strong>Category</strong> <%= product.category %> </li>
+              </ul>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"> <strong>Details:</strong> <br> <%= product.details %> </li>
               </ul>
               <div class="card-body">
                 <a href="#" class="card-link"> <button class="btn btn-outline-success"> Add to cart </button></a>

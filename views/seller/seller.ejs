@@ -7,8 +7,7 @@
     <title>Nursery Nature</title>
 
      <!--Custom CSS-->
-     <link rel="stylesheet" href="login.css">
-
+     <link rel="stylesheet" href="seller.css">
     <!--Favicon-->
     <link rel="shortcut icon" href="images/b039393234714368b5f6f52f4d742c63.png" type="image/x-icon">
     <!--Bootstrap CDN-->
@@ -62,6 +61,16 @@
                 <div>
                     <h2 class="heading">Product Details</h2>
                 </div>
+
+                <% error.forEach(errors => { %>
+                 
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                         <%= errors.msg %> 
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                <% }) %>
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="file" name="image" placeholder="Add image of your Product" style="background-color: ivory;">    
                 </div>
@@ -73,6 +82,20 @@
                 <div>
                     <i class="fas fa-unlock"></i> <input class="loginField" type="text" name="productPrice" placeholder="Products Price">    
                 </div>
+                <div>
+                    <i class="fas fa-unlock"></i> <input list="category" name="category" class="loginField" placeholder="Select from the options" >
+                        <datalist id="category" >
+                            <option value="Indoor Plant">
+                            <option value="Outdoor Plant">
+                            <option value="Fertilizer">
+                            <option value="Pot">
+                        </datalist>
+                </div>
+                
+                <div class="form-group">
+                    <textarea  name="details" rows="3" placeholder="Please enter details" maxlength="200"></textarea>
+                </div>
+                
                 
                 <button type="submit" class="btn btn-md">Submit</button>
             </form>
@@ -98,6 +121,6 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script src="login.js"></script> 
+        
 </body>
 </html>

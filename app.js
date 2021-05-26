@@ -77,6 +77,8 @@ const productSchema = new mongoose.Schema({
     productName : String,
     price : Number,
     productImage : String,
+    category : String,
+    details : String
 });
 
 const User = new mongoose.model("User", userSchema);
@@ -164,7 +166,7 @@ app.get("/sellerlogin",(req,res)=>{
 
 app.get("/sellerdetails",(req,res)=>{
 
-});
+}); 
 
 app.get("/sellerdashboard",(req,res)=>{
   res.render("seller/sellerdashboard");
@@ -297,7 +299,10 @@ app.post("/login",(req,res)=>{
 
 
 app.get("/sellers",auth2,(req,res)=>{
-  res.render("seller/seller");
+  res.render("seller/seller",{
+    error:errors
+  });
+  errors=[];
 });
 
 
@@ -412,7 +417,8 @@ app.post("/sellerlogin",(req,res)=>{
 app.post("/sellers", upload.single('image'),(req,res)=>{
 
   if(req.file === "" || req.body.productName === "" || 
-  req.body.productPrice === ""){
+  req.body.productPrice === "" || req.body.category === "" || req.body.details === ""){
+    errors.push({msg : "Error! Please fill all the fields!"});
     console.log("All fields are necessary!");
     res.redirect("/sellers");
     return;
@@ -421,12 +427,16 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
   const fileinfo = req.file.filename;
   const productName = req.body.productName;
   const productPrize = req.body.productPrice;
+  const category = req.body.category;
+  const detail = req.body.details;
 
-  
+  console.log(detail);
   const product = new Products({
     productName : productName,
     price : productPrize,
-    productImage : fileinfo
+    productImage : fileinfo,
+    category : category,
+    details : detail
   });
 
   console.log(product);
@@ -435,6 +445,7 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
     if(err){
       console.log("Error in uploading products data "+err);
     }else{
+      console.log("Saved Successfully!");
       res.redirect("/products");
     }
   })
