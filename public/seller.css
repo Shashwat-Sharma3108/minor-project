@@ -167,6 +167,9 @@ textarea{
     padding:1rem;
     color: ivory;
     background: rgb(22, 21, 21);
+    position: relative;
+    margin-bottom: 0;
+    
 }
 .fab{
     margin-right: 20px;

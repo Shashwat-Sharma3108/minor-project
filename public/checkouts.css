@@ -1,0 +1,97 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root{
+    --bgcolor:#c2f970;
+}
+body{
+    font-family: 'Ubuntu', sans-serif;
+
+}
+html{
+  scroll-behavior: smooth;
+}
+
+.navigation{
+    background: inherit;
+    font-size: 1rem;
+}
+
+.navbar-brand{
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    color: ivory;
+}
+
+strong{
+    color: green;
+}
+/*************************************Main content******************************************/
+.checkout{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    word-break: break-word;
+    flex-direction: column;
+}
+
+.fa-check-circle{
+    color: green;
+    padding-bottom: 2rem;
+    animation: check 1000ms linear;
+    animation-iteration-count: infinite;
+    animation-delay: 200ms;
+}
+
+@keyframes check {
+    from{
+        transform: scale(1);
+    }
+    to{
+        transform: scale(1.2);
+    }
+}
+
+.content{
+    width: 30%;
+    font-size: 1.625rem;
+    text-align: center;
+}
+
+.back{
+    margin: 2rem auto;
+}
+
+@media only screen and (max-width:900px){
+    .content{
+        width: 80%;
+        font-size: 1.2rem;
+    }
+}
+/*************************************Contacts******************************************/
+.contact{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    padding:1rem;
+    color: ivory;
+    background: rgb(22, 21, 21);
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.fab{
+    margin-right: 20px;
+    font-size: 20px;
+}
+.fab:last-child(){
+    margin-right: 0;
+}

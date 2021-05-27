@@ -95,7 +95,7 @@ const auth = async function(req,res,next){
   }
   try {
     const verified = jwt.verify(token, process.env.SECRET);
-    console.log(verified);
+    // console.log(verified);
     req.user = verified;
     next();
   } catch (error) {
@@ -164,6 +164,10 @@ app.get("/sellerlogin",(req,res)=>{
   errors = [];
 });
 
+app.get("/userdetails",auth,(req,res)=>{
+  res.render("userdetails");
+});
+
 app.get("/sellerdetails",(req,res)=>{
 
 }); 
@@ -171,6 +175,30 @@ app.get("/sellerdetails",(req,res)=>{
 app.get("/sellerdashboard",(req,res)=>{
   res.render("seller/sellerdashboard");
 });
+
+app.get("/checkout",auth,(req,res)=>{
+  const username = req.user.username;
+  let name, emailId, contact;
+  User.find({username : username},(err,result)=>{
+    if(err){
+      console.log("Error in finding the user "+err);
+    }else{
+     name = result[0].firstName + " " + result[0].lastName;
+     emailId = result[0].email;
+     contact = result[0].contact;
+     
+    
+     res.render("checkouts",{
+       name:name,
+       email:emailId,
+       contact :contact
+     }); 
+    }
+  }); 
+});
+  
+    
+
 
 app.get("/products",auth,async (req,res)=>{
        Products.find((err,result)=>{
