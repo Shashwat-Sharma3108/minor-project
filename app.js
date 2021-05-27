@@ -159,8 +159,24 @@ app.get("/sellerlogin",(req,res)=>{
   errors = [];
 });
 
-app.get("/userdetails",(req,res)=>{
-  res.render("userdetails");
+app.get("/userdetails",auth,(req,res)=>{
+  const username = req.user.username;
+
+  User.findOne({username : username},(err,result)=>{
+    // console.log(result);
+    res.render("userdetails",{
+      username : result.username,
+      firstName : result.firstName,
+      lastName : result.lastName,
+      emailId : result.email,
+      contact : result.contact,
+      address : result.address,
+      error : errors
+    });
+    errors = [];
+  });
+  
+
 });
 
 app.get("/sellerdetails",(req,res)=>{
@@ -470,6 +486,25 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
       res.redirect("/products");
     }
   })
+});
+
+app.post("/userdetails",auth,(req,res)=>{
+  
+    const username = req.user.username;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const emailId = req.body.email;
+    const contact = req.body.contact;
+    const address = req.body.address;
+
+    console.log(username);
+
+    if( !firstName || !lastName ||
+        !emailId || !contact || !address
+      ){
+        errors.push({msg : "All field are required!"});
+        res.redirect("/userdetails");
+    }
 });
 
 app.listen("3000" ,(req,res)=>{

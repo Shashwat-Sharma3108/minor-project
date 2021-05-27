@@ -1,0 +1,65 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root{
+    --bgcolor:#c2f970;
+}
+body{
+    font-family: 'Ubuntu', sans-serif;
+
+}
+html{
+  scroll-behavior: smooth;
+}
+
+.navigation{
+    background: inherit;
+    font-size: 1rem;
+}
+
+.navbar-brand{
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    color: ivory;
+}
+
+/*Form container*/
+.formContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    word-break: keep-all;
+}
+
+.wrapper{
+    padding: 2rem 1rem;
+    margin-top: 1rem;
+    width: 50%;
+    outline: 1px dashed grey;
+}
+/*Contacts*/
+.contact{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    padding:1rem;
+    color: ivory;
+    background: rgb(22, 21, 21);
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.fab{
+    margin-right: 20px;
+    font-size: 20px;
+}
+.fab:last-child(){
+    margin-right: 0;
+}
