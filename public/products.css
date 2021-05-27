@@ -30,6 +30,7 @@ html{
 /*Products*/
 .productsContainer{
     padding: 2rem;
+    margin-bottom: 2rem;
 }
 .products{
     display: flex;
@@ -47,6 +48,10 @@ img{
     margin-right: 1rem;
 }
 
+.center{
+    text-align: center;
+}
+
 /*Contacts*/
 .contact{
     display: flex;
@@ -57,7 +62,8 @@ img{
     padding:1rem;
     color: ivory;
     background: rgb(22, 21, 21);
-    position: relative;
+    position: fixed;
+    left: 0;
     bottom: 0;
     width: 100%;
 }

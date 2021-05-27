@@ -145,11 +145,6 @@ app.get("/signup",(req,res)=>{
     errors = [];
 });
 
-
-app.get("/userDetails",(req,res)=>{
-
-});
-
 app.get("/sellersignup",(req,res)=>{
   res.render("seller/sellersignup",{
     error : errors
@@ -164,13 +159,14 @@ app.get("/sellerlogin",(req,res)=>{
   errors = [];
 });
 
-app.get("/userdetails",auth,(req,res)=>{
+app.get("/userdetails",(req,res)=>{
   res.render("userdetails");
 });
 
 app.get("/sellerdetails",(req,res)=>{
 
-}); 
+});
+
 
 app.get("/sellerdashboard",(req,res)=>{
   res.render("seller/sellerdashboard");
@@ -197,9 +193,6 @@ app.get("/checkout",auth,(req,res)=>{
   }); 
 });
   
-    
-
-
 app.get("/products",auth,async (req,res)=>{
        Products.find((err,result)=>{
          if(err){
@@ -273,7 +266,7 @@ app.post("/signup",(req,res)=>{
                   })
               });
               }
-              }//for else
+              }
             }
           });
         }
