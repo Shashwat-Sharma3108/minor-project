@@ -164,7 +164,34 @@ app.get("/userdetails",auth,(req,res)=>{
 
   User.findOne({username : username},(err,result)=>{
     // console.log(result);
-    res.render("userdetails",{
+    if(!result){
+      errors.push({msg : "Login as Customer!"});
+      res.redirect("/login");
+    }else{
+      res.render("userdetails",{
+        username : result.username,
+        firstName : result.firstName,
+        lastName : result.lastName,
+        emailId : result.email,
+        contact : result.contact,
+        address : result.address,
+        error : errors
+      });
+      errors = [];
+    }
+});
+});
+
+app.get("/sellerdetails",auth2,(req,res)=>{
+  const username = req.user.username;
+
+  Seller.findOne({username : username},(err,result)=>{
+    if(!result){
+      errors.push({msg : "Login as seller!"});
+      res.redirect("/sellerlogin");
+    }else{
+         // console.log(result);
+    res.render("seller/sellerdetails",{
       username : result.username,
       firstName : result.firstName,
       lastName : result.lastName,
@@ -174,13 +201,8 @@ app.get("/userdetails",auth,(req,res)=>{
       error : errors
     });
     errors = [];
+    }
   });
-  
-
-});
-
-app.get("/sellerdetails",(req,res)=>{
-
 });
 
 
@@ -488,23 +510,31 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
   })
 });
 
-app.post("/userdetails",auth,(req,res)=>{
+app.patch("/userdetails",auth,(req,res)=>{
   
     const username = req.user.username;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const emailId = req.body.email;
-    const contact = req.body.contact;
-    const address = req.body.address;
+    console.log(req.body);
+    // const firstName = req.body.firstName;
+    // const lastName = req.body.lastName;
+    // const emailId = req.body.email;
+    // const contact = req.body.contact;
+    // const address = req.body.address;
+    // console.log(req.data);
 
-    console.log(username);
+    // console.log(username);
 
-    if( !firstName || !lastName ||
-        !emailId || !contact || !address
-      ){
-        errors.push({msg : "All field are required!"});
-        res.redirect("/userdetails");
-    }
+    // if( !firstName || !lastName ||
+    //     !emailId || !contact || !address
+    //   ){
+    //     errors.push({msg : "All field are required!"});
+    //     res.redirect("/userdetails");
+    // }else{
+    //   User.findOne({username : username, email : emailId},(err,result)=>{
+    //     if(err){
+    //       console.log("Error in finding user details");
+    //     }
+    //   })
+    // }
 });
 
 app.listen("3000" ,(req,res)=>{

@@ -43,6 +43,7 @@ html{
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+    position: absolute;
 }
 
 .loginForm{
@@ -156,6 +157,10 @@ input[type=number]::-webkit-outer-spin-button {
     padding:1rem;
     color: ivory;
     background: rgb(22, 21, 21);
+    position: fixed;
+    bottom: 0%;
+    right: 0;
+    width: 100%;
 }
 .fab{
     margin-right: 20px;
