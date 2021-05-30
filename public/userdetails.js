@@ -1,13 +1,6 @@
 
  function patch(){
 
-    let cookie = document.cookie;
-    cookie=cookie.split(";");
-
-    cookie=cookie[1].split("=");
-    cookie = cookie[1];
-    
-
     const url = "/userdetails";
     const userData = document.getElementsByClassName("form-control");
 
@@ -17,8 +10,6 @@
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.withCredentials = true;
 
-    
-    
     var data = {
         username : userData[0].value,
         firstName : userData[1].value,

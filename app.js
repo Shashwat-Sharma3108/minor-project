@@ -49,7 +49,8 @@ var globalToken;
 mongoose.connect("mongodb://localhost:27017/NurseryNation",{
     useNewUrlParser : true,
     useUnifiedTopology : true,
-    useCreateIndex : true
+    useCreateIndex : true,
+    useFindAndModify : false
 });
 
 
@@ -510,31 +511,53 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
   })
 });
 
-app.patch("/userdetails",auth,(req,res)=>{
+app.post("/userdetails",auth,(req,res)=>{
   
     const username = req.user.username;
-    console.log(req.body);
-    // const firstName = req.body.firstName;
-    // const lastName = req.body.lastName;
-    // const emailId = req.body.email;
-    // const contact = req.body.contact;
-    // const address = req.body.address;
-    // console.log(req.data);
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const emailId = req.body.email;
+    const contact = req.body.contact;
+    const address = req.body.address;
 
-    // console.log(username);
-
-    // if( !firstName || !lastName ||
-    //     !emailId || !contact || !address
-    //   ){
-    //     errors.push({msg : "All field are required!"});
-    //     res.redirect("/userdetails");
-    // }else{
-    //   User.findOne({username : username, email : emailId},(err,result)=>{
-    //     if(err){
-    //       console.log("Error in finding user details");
-    //     }
-    //   })
-    // }
+    if( !firstName || !lastName ||
+        !emailId || !contact || !address
+      ){
+        errors.push({msg : "All field are required!"});
+        res.redirect("/userdetails");
+    }else{
+      User.findOne({username : username , email :emailId},(err,result)=>{
+        if(err){
+          errors.push({msg : "Username or email not found"});
+          console.log("Error in finding user with the given username and emailId "+err);
+          res.redirect("/userdetails");
+        }else{
+          if(contact.length<10 || contact.length>10){
+            errors.push({msg : "Enter a valid phone number!"});
+            console.log("Invalid contact number!");
+            res.redirect("/userdetails");
+          }else{
+            User.findOneAndUpdate(
+              {username : username},
+              {firstName : firstName,
+               lastName : lastName,
+               emailId : emailId,
+               contact : contact,
+               address : address
+              },(err,result)=>{
+                if(err){
+                  console.log("Error in updating details");
+                  errors.push({msg : "Error in updating details"});
+                  res.redirect("/userdetails");
+                }else{
+                  errors.push({msg : "Updated Successfully!"});
+                  res.redirect("/userdetails");
+                }
+              })
+          }
+        }
+      })
+    }
 });
 
 app.listen("3000" ,(req,res)=>{

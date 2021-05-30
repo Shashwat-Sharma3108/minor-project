@@ -58,11 +58,8 @@
 
     <div class="formContainer">
       <div class="wrapper">
-        <form> 
+        <form method="POST" action="/userdetails"> 
           <h1>Your Details</h1>
-          <div class="alert alert-light" role="alert">
-            Updating your details will soon roll out!
-          </div>
           <% error.forEach(errors => { %>
                  
             <div class="alert alert-dark alert-dismissible fade show" role="alert">
@@ -75,50 +72,54 @@
           <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Username</label>
             <div class="col-sm-10">
-              <input type="text" readonly class="form-control" id="staticEmail" value=" <%= username %>">  <%= username %>
+              <input type="text" readonly class="form-control" id="staticEmail"  value=" <%= username %>">
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">First Name</label>
+            <label class="col-sm-2 col-form-label">First Name</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword" value="<%= firstName %>" > 
+              <input type="text" class="form-control" name="firstName" value="<%= firstName %>" > 
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Last Name</label>
+            <label class="col-sm-2 col-form-label">Last Name</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword" value="<%= lastName %>" readonly>  
+              <input type="text" class="form-control" name="lastName" value="<%= lastName %>" >  
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Email Id</label>
+            <label class="col-sm-2 col-form-label">Email Id</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control " id="inputPassword" value="<%= emailId %>" readonly> 
+              <input type="text" class="form-control " name="email" value="<%= emailId %>" > 
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Contact Number</label>
+            <label class="col-sm-2 col-form-label">Contact Number</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword" value="<%= contact %>" readonly> 
+              <input type="text" class="form-control" name="contact" value="<%= contact %>" > 
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Address</label>
+            <label class="col-sm-2 col-form-label">Address</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword" value="<%= address %>" readonly> 
+              <input type="text" class="form-control"  name="address" value="<%= address %>" > 
             </div>
           </div>
           
+          <div style="text-align: center;">
+            <button type="submit" class="btn btn-outline-success">Update</button>
+            <button type="reset" class="btn btn-outline-success">Reset</button>
+          </div>  
         </form>
-        <div style="text-align: center;">
-          <button onClick="patch()" class="btn btn-outline-success">Update</button>
-          <a href="/products"> <button type="submit" class="btn btn-outline-success"> Products </button></a>
+        <div style="text-align: center; padding-top: .5rem;">
+          <a href="/products"> <button class="btn btn-outline-success"> Products </button></a>
         </div>
+        
       </div>
       
     </div>
