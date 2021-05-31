@@ -10,20 +10,14 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const cookieParser = require("cookie-parser");
+const cloudinary = require("cloudinary").v2;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static("public"));
 
-const storage = multer.diskStorage({
-  destination : function(req,file,cb){
-    cb(null, 'public/images/')
-  },
-  filename : function(req,file,cb){
-    cb(null, Date.now() + file.originalname)
-  }
-});
+const storage = multer.diskStorage({});
 
 const upload = multer({storage : storage});
 
@@ -43,8 +37,11 @@ app.use(session({
   resave: true
 }));
 
-var globalToken;
-
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDNAME, 
+  api_key: process.env.APIKEY, 
+  api_secret: process.env.APISECRET 
+});
 
 mongoose.connect("mongodb://localhost:27017/NurseryNation",{
     useNewUrlParser : true,
@@ -52,7 +49,6 @@ mongoose.connect("mongodb://localhost:27017/NurseryNation",{
     useCreateIndex : true,
     useFindAndModify : false
 });
-
 
 const userSchema = new mongoose.Schema({
   username : {type : String, required : true, unique:true},
@@ -96,7 +92,6 @@ const auth = async function(req,res,next){
   }
   try {
     const verified = jwt.verify(token, process.env.SECRET);
-    // console.log(verified);
     req.user = verified;
     next();
   } catch (error) {
@@ -123,6 +118,7 @@ const auth2 = async function(req,res,next){
 }
 
 let errors = [];
+
 app.get("/logout",(req,res)=>{
     res.clearCookie("authToken");
     res.redirect("/");
@@ -164,7 +160,6 @@ app.get("/userdetails",auth,(req,res)=>{
   const username = req.user.username;
 
   User.findOne({username : username},(err,result)=>{
-    // console.log(result);
     if(!result){
       errors.push({msg : "Login as Customer!"});
       res.redirect("/login");
@@ -191,7 +186,6 @@ app.get("/sellerdetails",auth2,(req,res)=>{
       errors.push({msg : "Login as seller!"});
       res.redirect("/sellerlogin");
     }else{
-         // console.log(result);
     res.render("seller/sellerdetails",{
       username : result.username,
       firstName : result.firstName,
@@ -357,7 +351,6 @@ app.post("/login",(req,res)=>{
   }
 });
 
-
 app.get("/sellers",auth2,(req,res)=>{
   res.render("seller/seller",{
     error:errors
@@ -365,9 +358,7 @@ app.get("/sellers",auth2,(req,res)=>{
   errors=[];
 });
 
-
 app.post("/sellersignup",(req,res)=>{
-  //passport-local-mongoose 
 
   if(req.body.username === "" || req.body.password==="" ||
     req.body.firstName === "" || req.body.lastName === "" ||
@@ -411,7 +402,6 @@ app.post("/sellersignup",(req,res)=>{
                       address : req.body.address,
                       password: hash,
                   });
-                  
                   seller.save((err)=>{
                     if(err){
                       console.log("Error in registering user "+err);
@@ -471,10 +461,9 @@ app.post("/sellerlogin",(req,res)=>{
       }
     });
   }
-   
 });
 
-app.post("/sellers", upload.single('image'),(req,res)=>{
+app.post("/sellers", upload.single('image'),async(req,res)=>{
 
   if(req.file === "" || req.body.productName === "" || 
   req.body.productPrice === "" || req.body.category === "" || req.body.details === ""){
@@ -484,7 +473,7 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
     return;
   }
 
-  const fileinfo = req.file.filename;
+  const fileinfo = await cloudinary.uploader.upload(req.file.path);
   const productName = req.body.productName;
   const productPrize = req.body.productPrice;
   const category = req.body.category;
@@ -494,12 +483,10 @@ app.post("/sellers", upload.single('image'),(req,res)=>{
   const product = new Products({
     productName : productName,
     price : productPrize,
-    productImage : fileinfo,
+    productImage : fileinfo.url,
     category : category,
     details : detail
   });
-
-  console.log(product);
 
   product.save((err)=>{
     if(err){
