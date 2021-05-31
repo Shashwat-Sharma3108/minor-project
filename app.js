@@ -43,7 +43,7 @@ cloudinary.config({
   api_secret: process.env.APISECRET 
 });
 
-mongoose.connect("mongodb://localhost:27017/NurseryNation",{
+mongoose.connect("mongodb+srv://admin_Shashwat:"+process.env.PASSWORD+"@cluster1.yglo4.mongodb.net/NurseryNation?retryWrites=true&w=majority",{
     useNewUrlParser : true,
     useUnifiedTopology : true,
     useCreateIndex : true,
@@ -199,7 +199,6 @@ app.get("/sellerdetails",auth2,(req,res)=>{
     }
   });
 });
-
 
 app.get("/sellerdashboard",(req,res)=>{
   res.render("seller/sellerdashboard");
