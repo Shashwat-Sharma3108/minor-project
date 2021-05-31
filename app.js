@@ -207,20 +207,26 @@ app.get("/sellerdashboard",(req,res)=>{
 app.get("/checkout",auth,(req,res)=>{
   const username = req.user.username;
   let name, emailId, contact;
-  User.find({username : username},(err,result)=>{
+
+  User.findOne({username : username},(err,result)=>{
     if(err){
       console.log("Error in finding the user "+err);
     }else{
-     name = result[0].firstName + " " + result[0].lastName;
-     emailId = result[0].email;
-     contact = result[0].contact;
+      if(!result){
+        errors.push({msg : "Login as a user!"});
+        res.redirect("/login");
+        return;
+      }else{
+        name = result.firstName + " " + result.lastName;
+        emailId = result.email;
+        contact = result.contact;
      
-    
      res.render("checkouts",{
        name:name,
        email:emailId,
        contact :contact
      }); 
+      }
     }
   }); 
 });
