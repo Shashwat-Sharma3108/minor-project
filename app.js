@@ -75,7 +75,8 @@ const productSchema = new mongoose.Schema({
     price : Number,
     productImage : String,
     category : String,
-    details : String
+    details : String,
+    sellername : String
 });
 
 const feedbackSchema = new mongoose.Schema({
@@ -311,7 +312,8 @@ app.get("/feedbacks",auth,(req,res)=>{
 
 app.get("/sellers",auth2,(req,res)=>{
   res.render("seller/seller",{
-    error:errors
+    error:errors,
+    username : req.user.username
   });
   errors=[];
 });
@@ -534,8 +536,9 @@ app.post("/sellerlogin",(req,res)=>{
   }
 });
 
-app.post("/sellers", upload.single('image'),async(req,res)=>{
+app.post("/sellers",upload.single('image'),async(req,res)=>{
 
+  
   if(req.file === "" || req.body.productName === "" || 
   req.body.productPrice === "" || req.body.category === "" || req.body.details === ""){
     errors.push({msg : "Error! Please fill all the fields!"});
@@ -549,6 +552,7 @@ app.post("/sellers", upload.single('image'),async(req,res)=>{
   const productPrize = req.body.productPrice;
   const category = req.body.category;
   const detail = req.body.details;
+  const sellername = req.body.username;
 
   console.log(detail);
   const product = new Products({
@@ -556,7 +560,8 @@ app.post("/sellers", upload.single('image'),async(req,res)=>{
     price : productPrize,
     productImage : fileinfo.url,
     category : category,
-    details : detail
+    details : detail,
+    sellername : sellername
   });
 
   product.save((err)=>{
