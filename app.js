@@ -11,6 +11,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const cookieParser = require("cookie-parser");
 const cloudinary = require("cloudinary").v2;
+const validator = require("email-validator");
 
 const app = express();
 
@@ -380,7 +381,11 @@ app.post("/signup",(req,res)=>{
                   console.log("Password too small");
                   res.redirect("/signup");
                 }else{
-                console.log("Registering new user!");
+                if(!validator.validate(req.body.emailId)){
+                  errors.push({msg : "Error! Enter a valid Email Address!"});
+                  res.redirect("/signup");
+                }else{
+                  console.log("Registering new user!");
                 bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
                   const user = new User({
                     username : req.body.username,
@@ -402,6 +407,7 @@ app.post("/signup",(req,res)=>{
                     }
                   })
               });
+                }
               }
               }
             }
@@ -488,7 +494,11 @@ app.post("/sellersignup",(req,res)=>{
                 console.log("Username already exists ");
                 res.redirect("/sellersignup");
               }else{
-                console.log("Registering new user!");
+                if(!validator.validate(req.body.emailId)){
+                  errors.push({msg : "Error! Enter a valid Email Address"});
+                  res.redirect("/sellersignup");
+                }else{
+                  console.log("Registering new user!");
                 bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
                   const seller = new Seller({
                     username : req.body.username,
@@ -508,6 +518,7 @@ app.post("/sellersignup",(req,res)=>{
                     }
                   })
               });
+                }
               }
             }
           });
@@ -655,14 +666,14 @@ app.post("/sellerdetails",auth2,(req,res)=>{
   const emailId = req.body.email;
   const contact = req.body.contact;
   const address = req.body.address;
-
+  
   if( !firstName || !lastName ||
       !emailId || !contact || !address
     ){
       errors.push({msg : "All field are required!"});
       res.redirect("/sellerdetails");
   }else{
-    User.findOne({username : username , email :emailId},(err,result)=>{
+    User.findOne({username : username,email : emailId},(err,result)=>{
       if(err){
         errors.push({msg : "Username or email not found"});
         console.log("Error in finding user with the given username and emailId "+err);
