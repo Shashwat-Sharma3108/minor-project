@@ -279,15 +279,40 @@ app.get("/checkout",auth,(req,res)=>{
 });
   
 app.get("/products",auth,async (req,res)=>{
-       Products.find((err,result)=>{
-         if(err){
-           console.log("Error in retriving data from products "+err);
-         }else{
-          res.render("products",{
-            products : result
-          });
-         }
-       });
+      
+      Products.find({category : "Indoor Plant"},(err,indoor)=>{
+        if(err){
+          console.log("Error in finding indoor plants "+err);
+        }else{
+          Products.find({category : "Outdoor Plant"},(err2,outdoor)=>{
+            if(err2){
+              console.log("Error in finding outdoor plants "+err2);
+            }else{
+              Products.find({category : "Pot"},(err3,pot)=>{
+                if(err3){
+                  console.log("Error in finding pots "+err3);
+                }else{
+                  Products.find({category : "Fertilizer"},(err4,fertilizer)=>{
+                    if(err4){
+                      console.log("Error in finding fetlizers "+err4);
+                    }else{
+                     Products.find({category : {$nin : ["Indoor Plant","Outdoor Plant","Pot","Fertilizer"]}},(err,result)=>{
+                      res.render("products",{
+                        indoor : indoor,
+                        outdoor : outdoor,
+                        pots : pot,
+                        fertilizer : fertilizer,
+                        others : result
+                      });
+                     })
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      })
 });
 
 app.get("/feedbacks",auth,(req,res)=>{

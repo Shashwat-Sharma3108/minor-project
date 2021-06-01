@@ -27,6 +27,14 @@ html{
     color: ivory;
 }
 
+.heading{
+    transition: all 500ms ease-in-out;
+}
+
+.heading:hover{
+    letter-spacing: 3px;
+}
+
 /*Products*/
 .productsContainer{
     padding: 2rem;
@@ -50,6 +58,19 @@ img{
 
 .center{
     text-align: center;
+}
+
+.button{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    transition: all 1s ease-in-out;
+}
+
+.nonvisible{
+    opacity: 0;
+    display: none;
 }
 
 /*Contacts*/
