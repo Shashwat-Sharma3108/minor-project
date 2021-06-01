@@ -62,7 +62,7 @@ img{
     padding:1rem;
     color: ivory;
     background: rgb(22, 21, 21);
-    position: fixed;
+    position: sticky;
     left: 0;
     bottom: 0;
     width: 100%;

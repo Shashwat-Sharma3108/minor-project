@@ -354,6 +354,30 @@ line-height: 2;
 color: #6b705c;
 }
 
+.feedbacks{
+  margin: 3rem 0 0;
+  font-size: 1.5rem;
+}
+
+.feedbacks h5{
+  font-size: 2rem;
+}
+
+img.w-100{
+  height: 25rem;
+  object-fit: contain;
+  position: relative;  
+  
+}
+
+#carouselExampleIndicators{
+  background-color: rgb(22, 21, 21);
+}
+
+.carousel-caption{
+  backdrop-filter: blur(2px);
+  margin-top: 2rem;
+}
 /***************************Contacts***************************************/
 .contact{
   display: flex;
@@ -364,6 +388,10 @@ color: #6b705c;
   padding:1rem;
   color: ivory;
   background: rgb(22, 21, 21);
+  position: sticky;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
 .fab{
   margin-right: 20px;

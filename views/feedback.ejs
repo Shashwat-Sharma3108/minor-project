@@ -7,7 +7,7 @@
     <title>Nursery Nature</title>
 
      <!--Custom CSS-->
-     <link rel="stylesheet" href="login.css">
+     <link rel="stylesheet" href="feedbacks.css">
 
     <!--Favicon-->
     <link rel="shortcut icon" href="images/b039393234714368b5f6f52f4d742c63.png" type="image/x-icon">
@@ -47,7 +47,8 @@
                           <i class="far fa-user-circle"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item item" href="/signup">Sign up</a>
+                          <a class="dropdown-item item" href="/logout">Logout</a>
+                          <a class="dropdown-item item" href="/products">Products</a>
                         </div>
                       </li>
                   </ul>
@@ -57,9 +58,9 @@
         </div>
 
         <div class="loginContainer">
-            <form action="/login" method="POST" class="loginForm">
+            <form action="/feedbacks" method="POST" class="loginForm">
                 <div>
-                    <h2>Login</h2>
+                    <h2>Feedback Form</h2>
                     <% error.forEach(errors => { %>
                  
                         <div class="alert alert-dark alert-dismissible fade show" role="alert">
@@ -72,18 +73,22 @@
                         
                 </div>
                 <div>
-                    <i class="far fa-user"></i><input class="loginField" type="text" name="username" placeholder="User Name"
-                    value="<%= typeof username !='undefined'? username:''%>">
+                    <i class="far fa-user"></i><input class="loginField" type="text" name="username" placeholder="User Name" readonly
+                    value=<%= username %>>
                 </div>
                 <div>
-                    <i class="fas fa-unlock"></i> <input class="loginField" type="password" name="password" placeholder="Password"
-                    >    
+                    <i class="far fa-user"></i> <input class="loginField" type="text" name="firstName" placeholder="First Name" readonly
+                    value=<%= firstName %>>    
                 </div>
                 <div>
-                    <a href="/signup"> New Here? SignUp!</a>
+                    <i class="far fa-user"></i> <input class="loginField" type="text" name="lastName" placeholder="First Name" readonly
+                    value=<%= lastName %>>    
                 </div>
-                
-                <button type="submit" class="btn btn-md">Login</button>
+                <i class="fas fa-info"></i>
+                <div class="form-group">
+                     <textarea  name="details" rows="3" placeholder="Please enter details" maxlength="200"></textarea>
+                </div>
+                <button type="submit" class="btn btn-md">Submit</button>
 
             </form>
         </div>
@@ -101,13 +106,10 @@
                 </div>
             </div>
         </footer>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js" type="text/javascript" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineMax.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
-
+       
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script src="login.js"></script> 
+        
 </body>
 </html>

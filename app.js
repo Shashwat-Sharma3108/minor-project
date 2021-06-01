@@ -88,7 +88,7 @@ const feedbackSchema = new mongoose.Schema({
 const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
-
+const Feedback = new mongoose.model("Feedback",feedbackSchema);
 
 const auth = async function(req,res,next){
   const token = req.cookies.authToken;
@@ -155,7 +155,23 @@ app.get("/logout",(req,res)=>{
 });
 
 app.get("/",(req,res)=>{
-    res.render("index");
+    Feedback.find((err,result)=>{
+      if(err){
+        console.log("Error in fetching feedbacks");
+      }else{
+        if(!result){
+          res.render("index",{
+            feedback : "Be the first to submit a feedback" 
+          });
+        }else{
+          // console.log(result);
+          res.render("index",{
+            feedback : result
+          });
+        }
+      }
+    });
+    
 });
 
 app.get("/login",(req,res)=>{
@@ -274,8 +290,31 @@ app.get("/products",auth,async (req,res)=>{
 });
 
 app.get("/feedbacks",auth,(req,res)=>{
-  res.render("feedback");
+  User.findOne({username : req.user.username},(err,result)=>{
+    if(err){
+      console.log("Error in finding the user "+err);
+    }else{
+      if(!result){
+        errors.push({msg : "Username not found!"});
+        res.redirect("/login");
+      }else{
+        res.render("feedback",{
+          error : errors,
+          username : result.username,
+          firstName : result.firstName,
+          lastName : result.lastName
+        });
+      }
+    }
+  })
 })
+
+app.get("/sellers",auth2,(req,res)=>{
+  res.render("seller/seller",{
+    error:errors
+  });
+  errors=[];
+});
 
 app.post("/signup",(req,res)=>{
     
@@ -388,13 +427,6 @@ app.post("/login",(req,res)=>{
       }
     });
   }
-});
-
-app.get("/sellers",auth2,(req,res)=>{
-  res.render("seller/seller",{
-    error:errors
-  });
-  errors=[];
 });
 
 app.post("/sellersignup",(req,res)=>{
@@ -585,6 +617,32 @@ app.post("/userdetails",auth,(req,res)=>{
       })
     }
 });
+
+app.post("/feedbacks",(req,res)=>{
+  console.log(req.body.username , req.body.firstName, req.body.lastName);
+  if(req.body.details === ""){
+    errors.push({msg : "Please provide a feedback!"});
+    res.redirect("/feedbacks");
+    return;
+  }else{
+    const feedback = new Feedback({
+      username : req.body.username,
+      firstName : req.body.firstName,
+      lastName : req.body.lastName,
+      feedback : req.body.details
+    });
+
+    feedback.save((err)=>{
+      if(err){
+        console.log("Error in submitting a feedback "+err);
+        errors.push({msg : "Sorry! cannot submit your feedback"});
+      }else{
+        console.log("Feedback submitted!");
+        res.redirect("/");
+      }
+    })
+  }
+})
 
 app.listen("3000" ,(req,res)=>{
     console.log("Server Started at port 3000");
