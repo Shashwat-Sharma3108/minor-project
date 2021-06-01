@@ -78,6 +78,13 @@ const productSchema = new mongoose.Schema({
     details : String
 });
 
+const feedbackSchema = new mongoose.Schema({
+  username : String,
+  firstName : String,
+  lastName : String,
+  feedback : String
+})
+
 const User = new mongoose.model("User", userSchema);
 const Seller = new mongoose.model("Seller", sellerSchema);
 const Products = new mongoose.model("Product",productSchema);
@@ -93,7 +100,18 @@ const auth = async function(req,res,next){
   try {
     const verified = jwt.verify(token, process.env.SECRET);
     req.user = verified;
-    next();
+    User.findOne({username : req.user.username},(err,result)=>{
+      if(err){
+        console.log(err);
+      }else{
+        if(!result){
+          errors.push({msg : "Username not found!"});
+          res.redirect("/login");
+        }else{
+          next();
+        }
+      }
+    });
   } catch (error) {
     console.log("Invalid token "+error);
     res.redirect("/login");
@@ -110,6 +128,18 @@ const auth2 = async function(req,res,next){
   try {
     const verified = jwt.verify(token, process.env.SECRET);
     req.user = verified;
+    Seller.findOne({username : req.user.username},(err,result)=>{
+      if(err){
+        console.log(err);
+      }else{
+        if(!result){
+          errors.push({msg : "Username not found!"});
+          res.redirect("/sellerlogin");
+        }else{
+          next();
+        }
+      }
+    })
     next();
   } catch (error) {
     console.log("Invalid token "+error);
@@ -242,6 +272,10 @@ app.get("/products",auth,async (req,res)=>{
          }
        });
 });
+
+app.get("/feedbacks",auth,(req,res)=>{
+  res.render("feedback");
+})
 
 app.post("/signup",(req,res)=>{
     

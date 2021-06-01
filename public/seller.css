@@ -126,8 +126,16 @@ input[type=number]::-webkit-outer-spin-button {
 ::placeholder{
     font-size: 1.2rem;  
     font-weight: 600;
-    
 }
+
+
+.fa-info:before {
+    content: "\f129";
+    position: absolute;
+    left: 4%;
+    padding: .5rem 0;
+}
+
 
 @media only screen and (max-width:750px){
     .loginForm{
