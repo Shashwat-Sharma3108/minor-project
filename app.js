@@ -141,7 +141,6 @@ const auth2 = async function(req,res,next){
         }
       }
     })
-    next();
   } catch (error) {
     console.log("Invalid token "+error);
     res.redirect("/sellerlogin");
@@ -646,6 +645,55 @@ app.post("/userdetails",auth,(req,res)=>{
         }
       })
     }
+});
+
+app.post("/sellerdetails",auth2,(req,res)=>{
+  
+  const username = req.user.username;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const emailId = req.body.email;
+  const contact = req.body.contact;
+  const address = req.body.address;
+
+  if( !firstName || !lastName ||
+      !emailId || !contact || !address
+    ){
+      errors.push({msg : "All field are required!"});
+      res.redirect("/sellerdetails");
+  }else{
+    User.findOne({username : username , email :emailId},(err,result)=>{
+      if(err){
+        errors.push({msg : "Username or email not found"});
+        console.log("Error in finding user with the given username and emailId "+err);
+        res.redirect("/sellerdetails");
+      }else{
+        if(contact.length<10 || contact.length>10){
+          errors.push({msg : "Enter a valid phone number!"});
+          console.log("Invalid contact number!");
+          res.redirect("/sellerdetails");
+        }else{
+          User.findOneAndUpdate(
+            {username : username},
+            {firstName : firstName,
+             lastName : lastName,
+             emailId : emailId,
+             contact : contact,
+             address : address
+            },(err,result)=>{
+              if(err){
+                console.log("Error in updating details");
+                errors.push({msg : "Error in updating details"});
+                res.redirect("/sellerdetails");
+              }else{
+                errors.push({msg : "Updated Successfully!"});
+                res.redirect("/sellerdetails");
+              }
+            })
+        }
+      }
+    })
+  }
 });
 
 app.post("/feedbacks",(req,res)=>{
