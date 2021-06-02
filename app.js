@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema({
   firstName :{type : String, required : true},
   lastName :{type : String, required : true},
   email : {type : String, required : true, unique:true},
-  contact :{type : String, required : true},
+  contact :{type : Number, required : true},
   address :{type : String, required : true},
   password : {type : String, required : true}
 });
@@ -67,7 +67,7 @@ const sellerSchema = new mongoose.Schema({
   firstName :{type : String, required : true},
   lastName :{type : String, required : true},
   email : {type : String, required : true, unique:true},
-  contact :{type : String, required : true},
+  contact :{type : Number, required : true},
   address :{type : String, required : true},
 });
 
@@ -381,8 +381,8 @@ app.post("/signup",(req,res)=>{
                   console.log("Password too small");
                   res.redirect("/signup");
                 }else{
-                if(!validator.validate(req.body.emailId)){
-                  errors.push({msg : "Error! Enter a valid Email Address!"});
+                  if(!(validator.validate(req.body.emailId)&&validator.validate(req.body.username))){
+                  errors.push({msg : "Error! Enter a valid Email Address or Username!"});
                   res.redirect("/signup");
                 }else{
                   console.log("Registering new user!");
@@ -494,8 +494,8 @@ app.post("/sellersignup",(req,res)=>{
                 console.log("Username already exists ");
                 res.redirect("/sellersignup");
               }else{
-                if(!validator.validate(req.body.emailId)){
-                  errors.push({msg : "Error! Enter a valid Email Address"});
+                if(!(validator.validate(req.body.emailId)&&validator.validate(req.body.username))){
+                  errors.push({msg : "Error! Enter a valid Email Address or Username"});
                   res.redirect("/sellersignup");
                 }else{
                   console.log("Registering new user!");
@@ -589,7 +589,6 @@ app.post("/sellers",upload.single('image'),async(req,res)=>{
   const detail = req.body.details;
   const sellername = req.body.username;
 
-  console.log(detail);
   const product = new Products({
     productName : productName,
     price : productPrize,
@@ -673,7 +672,7 @@ app.post("/sellerdetails",auth2,(req,res)=>{
       errors.push({msg : "All field are required!"});
       res.redirect("/sellerdetails");
   }else{
-    User.findOne({username : username,email : emailId},(err,result)=>{
+    Seller.findOne({username : username,email : emailId},(err,result)=>{
       if(err){
         errors.push({msg : "Username or email not found"});
         console.log("Error in finding user with the given username and emailId "+err);
@@ -684,7 +683,7 @@ app.post("/sellerdetails",auth2,(req,res)=>{
           console.log("Invalid contact number!");
           res.redirect("/sellerdetails");
         }else{
-          User.findOneAndUpdate(
+          Seller.findOneAndUpdate(
             {username : username},
             {firstName : firstName,
              lastName : lastName,

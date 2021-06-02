@@ -41,6 +41,12 @@ html{
     width: 50%;
     outline: 1px dashed grey;
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
 /*Contacts*/
 .contact{
     display: flex;
