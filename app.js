@@ -343,6 +343,13 @@ app.get("/sellers",auth2,(req,res)=>{
   errors=[];
 });
 
+app.get("/updatepassword",(req,res)=>{
+  res.render("updatepassword",{
+    error : errors
+  });
+  errors=[];
+});
+
 app.post("/signup",(req,res)=>{
     
   if(req.body.username === "" || req.body.password==="" ||
@@ -730,7 +737,63 @@ app.post("/feedbacks",(req,res)=>{
       }
     })
   }
-})
+});
+
+app.post("/updatepassword",(req,res)=>{
+  const username = req.body.username;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+
+  if(!username || !oldPassword || !newPassword){
+    errors.push({msg : "All fields are necessary!"});
+    res.redirect("/updatepassword");
+  }else{
+    User.findOne({username : username},(err,result)=>{
+      if(err){
+        console.log("Error in finding user "+err);
+        errors.push({msg : "Error! Technical error please try later"});
+        res.redirect("/updatepassword");
+      }else if(!result){
+        console.log("Username not found!");
+        errors.push({msg : "Error! Username not found"});
+        res.redirect("/updatepassword");
+      }else{
+        bcrypt.compare(oldPassword, result.password, (err,passwordResult)=>{
+          if(err){
+            console.log("Error in checking password "+err);
+            errors.push({msg : "Error! Technincal Error please Try again later!"});
+            res.redirect("/updatepassword");
+          }else{
+            if(passwordResult === false){
+              errors.push({msg : "Error! Incorrect Password"});
+              console.log("Incorrect Password!");
+              res.redirect("/updatepassword");
+            }
+            if(passwordResult === true){
+              if(newPassword.length<6){
+                errors.push({msg : "Password must be at least 6 characters!"});
+                res.redirect("/updatepassword");
+              }else{
+                    console.log("Updating the password!");
+                    bcrypt.hash(newPassword, saltRounds, function(err, hash) {
+                    User.findOneAndUpdate({username : username},{password:hash},{new:true},(err,result)=>{
+                      if(err){
+                        console.log("Error in findoneAndUpdate "+err);
+                      }else{
+                        errors.push({msg:"Password Updated! Please Login Again!"});
+                        res.clearCookie("authToken");
+                        res.redirect("/login");
+                      }
+                    });
+                });
+              }
+            }
+          }
+        });
+      }
+    })
+  }
+});
 
 app.listen(process.env.PORT || 3000 ,(req,res)=>{
     console.log("Server Started at port 3000");
